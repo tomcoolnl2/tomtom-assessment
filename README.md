@@ -31,7 +31,13 @@ The code processing and building data is inside `backend/src/index.ts`.
 
 ## Local setup for the frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).\
+It is used as a representation of the generated data/outcome from the beackend.\
+Interaction with the map so far has been disabled to avoid confusion ;)
+
+- light blue markers are solitairy features
+- dark blue means it is withing a clster
+Forgive me that I couldn't make it clearer.
 
 - Move into the `frontend` directory
 - Run `npm install` inside this folder.
@@ -49,3 +55,4 @@ A very logical next step would be to either load it through a ajax request, or l
 - A next step would be generate data for a set or even all zoom levels, so it is pre processerd
 - A next step would be to calculate the clusterd point center, and make a point out of that.
 - Another next step could be: wrapping this project in a Docker container, so a user who wants to set this up locally doesn't have to upgrade his/her system to run the proper version of NodeJS. For times' sake, this was omitted.
+- A next step is to write unit tests to support and clarify my code. Especially the backend part.

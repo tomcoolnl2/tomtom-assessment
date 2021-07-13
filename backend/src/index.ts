@@ -6,7 +6,7 @@ const rawdata = fs.readFileSync(__dirname + '/data.json')
 let geodata = JSON.parse(rawdata.toString())
 const featureData = geodata.features
 
-console.log('Processing...') // Avaoid a void inside your node console ;)
+console.log('Processing...') // Avoid a void inside your node console ;)
 
 type ScreenPixelCoords = [number, number]
 
@@ -20,7 +20,7 @@ const mapWidth: number = 800
 const mapHeight: number = 600
 const zoom: number = 9 // start zoom level
 const threshold: number = 5 // some extra px to avoid markers glueing together
-const r: number = 14 // radius for each point/marker
+const r: number = 7 // radius for each point/marker
 const sw: number = 1 // point/marker outline 
 let coords: ScreenPixelCoordsGroup = {}
 
@@ -41,7 +41,7 @@ const longLatToOffset = (long: number, lat: number): ScreenPixelCoords => {
 
 // calculate the actual distance between two points using screen pixel coordinates.
 // because we choose to use circles as markers,
-// we need to subtract the radian (r) of a marker twice, and also the
+// we need to subtract the radian (r) of a marker twice, and also the marker outline 
 const calculateDistance = (
   [ x1, y1 ]: ScreenPixelCoords,
   [ x2, y2 ]: ScreenPixelCoords
@@ -60,12 +60,10 @@ const linearSearch = (list: string[][], item1: string) => {
   return index
 }
 
-// ---------------------
-
 // In order to prevent large geoJSON object to be sniffed for information,
 // we create a flatter object structure, with the id of the point as object lookup property.
 // The id points to the screen pixel coordinates x, y, which we need to measure distance
-
+// Like so: { 'id' : [x, y] }
 for (let i = 0, point; point = featureData[i]; i += 1) {
   const { geometry: { coordinates: [lat, long] }, properties: { id } } = point
   coords[id] = longLatToOffset(long, lat)
@@ -73,21 +71,21 @@ for (let i = 0, point; point = featureData[i]; i += 1) {
 
 // We have to compare every screen pixel-coordinate-combination to all others.
 // I considered using an algorithm to cluster coordinates.
-// 'Hierarchical clustering' describes my siituation. But since that algorithm is heavy
+// 'Hierarchical clustering' describes my situation. But since that algorithm is heavy
 // on both space and time complexity, I thought I could write my own O(n^2) complexity
-// also fOr times sake
+// also for times sake...
 
-// an array containing combinations/pairs of id that cluster together
+// an array containing combinations/pairs of ids that cluster together
 let clusters: Array<string[]> = []
-// memoize id-combinations to prevent calculating distances more then once
+// Memoize id-combinations to prevent calculating distances more then once
 // (if you calculate A to B, you don't need to calculate B to A)
 // I prefer preventing calculations over preventing iterations here.
 const cache: string[] = []
 // make coords iterable
 const flatCoords = Object.entries(coords)
 
-let i = 0
 for (const [id1, point1] of flatCoords) {
+  // for each coord, compare it to the other coords
   for (const [id2, point2] of flatCoords) {
     // prevent comparison to itself
     if (id1 === id2) {
@@ -130,7 +128,7 @@ for (const [id1, point1] of flatCoords) {
 
 // quick and dirty way to generate an array objects:
 //  - one for solitary features and one for clusters
-// eventually each cluster will be represented by a geoJSON object for the center of that cluster
+// eventually each cluster will be represented by a geoJSON object for the center of that cluster, but I didn't get to that unfortunately.
 
 for (const cluster of clusters) {
     for (let i = 0, id: string; id = cluster[i]; i += 1) {
@@ -141,18 +139,13 @@ for (const cluster of clusters) {
             index = pointId
             return id === String(pointId)
         })
-        console.log(point)
+
         if (point) {
             // replace id for corresponding geoJSON data      
             cluster[i] = point
         }
     }
 }
-
-// Logical next steps:
-// move over to new cluster data 
-// then calculate every cluster geoJSON center
-// create a feature from that
 
 // write clusters and features into a json file
 let output = []

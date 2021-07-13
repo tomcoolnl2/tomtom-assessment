@@ -7,15 +7,15 @@ import geojson from './output.json'
 const mapWidth: number = 800
 const mapHeight: number = 600
 const zoom: number = 9 // start zoom level
-const r: number = 14 // radius for each point/marker
+const r: number = 7 // radius for each point/marker
 const sw: number = 1 // point/marker outline 
 
 
 const Map = ReactMapboxGl({
   accessToken:
     'pk.eyJ1IjoidG9tY29vbG5sIiwiYSI6ImNrcXhvMzBxYzEwNmoycXFhdzB6c3NoangifQ.bMz4uHh9gMUzZIBqZR_4ag',
-    scrollZoom: false,
-    doubleClickZoom: false
+    scrollZoom: false, // locked for now
+    doubleClickZoom: false // locked for now
 })
 
 const symbolLayout: MapboxGL.SymbolLayout = {
@@ -37,11 +37,10 @@ const circlePaintFeature: MapboxGL.CirclePaint = {
 }
 
 const circlePaintCluster: MapboxGL.CirclePaint = {
+  ...circlePaintFeature,
   'circle-color': 'blue',
-  'circle-stroke-width': sw,
-  'circle-stroke-color': 'black',
-  'circle-radius': r
 }
+
 export interface PopupState {
   id: number
   lngLat: [number, number]
